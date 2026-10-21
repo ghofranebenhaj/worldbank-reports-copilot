@@ -3,29 +3,28 @@ import sys
 from src.search import hybrid_search
 
 
+def valid_pages(cell):
+    """The page column can hold several valid pages, separated by |."""
+    return {int(p) for p in cell.split("|")}
+
+
 def evaluate(path="evaluation/questions.csv", config=None, k=5):
     hits, reciprocal, total = 0, 0.0, 0
     with open(path, newline="", encoding="utf-8") as f:
         for row in csv.DictReader(f):
             results = hybrid_search(row["question"], top_k=k, config=config)
+            pages = valid_pages(row["page"])
             rank = next(
-                (
-                    i
-                    for i, r in enumerate(results, start=1)
-                    if r["document"] == row["document"] and r["page"] == int(row["page"])
-                ),
+                (i for i, r in enumerate(results, start=1)
+                 if r["document"] == row["document"] and r["page"] in pages),
                 None,
             )
             total += 1
             if rank:
                 hits += 1
                 reciprocal += 1 / rank
-    return {
-        "config": config,
-        "questions": total,
-        f"hit@{k}": round(hits / total, 3) if total else 0,
-        "MRR": round(reciprocal / total, 3) if total else 0,
-    }
+    return {"config": config, "questions": total,
+            f"hit@{k}": round(hits / total, 3), "MRR": round(reciprocal / total, 3)}
 
 
 if __name__ == "__main__":
