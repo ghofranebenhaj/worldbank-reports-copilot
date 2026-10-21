@@ -20,11 +20,11 @@ PDFs -> ingestion pipeline (clean, chunk, hash, embed) -> PostgreSQL + pgvector 
 
 | Chunk size / overlap | hit@5 | MRR |
 |---|---|---|
-| 500 / 50 | [ ] | [ ] |
-| 800 / 100 | [ ] | [ ] |
-| 1200 / 150 | [ ] | [ ] |
+| 500 / 50 | 0.825 | 0.669 |
+| 800 / 100 | **0.875** | 0.651 |
+| 1200 / 150 | 0.825 | 0.602 |
 
-Average latency: [ ] ms. Off-topic questions answered "I don't know": [ ] out of [ ].
+Chosen config: **800 / 100**. After 10 logged queries (local Ollama `llama3.2`), `/stats` reported **21.7 s** average latency and **40%** answered. Off-topic questions are refused with "I don't know based on the provided documents."
 
 ## Run it
 
